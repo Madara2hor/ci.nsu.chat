@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "572591041380",
+    "firebase_url": "https://ci-nsu-chat.firebaseio.com",
+    "project_id": "ci-nsu-chat",
+    "storage_bucket": "ci-nsu-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:572591041380:android:2d1c7bd89adcb29f716871",
+        "android_client_info": {
+          "package_name": "madara2hor.ci.nsu.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "572591041380-s3eqvecdd2djkumnsprk69m7t3m8f37s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "madara2hor.ci.nsu.chat",
+            "certificate_hash": "ece5ef5726b253f444e478d2cf61a0e866b40962"
+          }
+        },
+        {
+          "client_id": "572591041380-j3547e7pc5aekoli6fp0ef7c0nkm8g25.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCo3u-GDWOoyh05Y9Jo76QmsEqME5KCLxY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "572591041380-j3547e7pc5aekoli6fp0ef7c0nkm8g25.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
