@@ -1,5 +1,5 @@
 import 'package:ci.nsu.chat/Pages/Sidebar/sidebar.dart';
-import 'package:ci.nsu.chat/Pages/home.dart';
+import 'package:ci.nsu.chat/Pages/chatRooms.dart';
 import 'package:flutter/material.dart';
 
 class SideBarLayout extends StatelessWidget {
@@ -8,7 +8,7 @@ class SideBarLayout extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          HomePage(),
+          ChatRoomsPage(),
           SideBar(),
         ],
       ),

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ci.nsu.chat/Helpers/app_colors.dart';
+import 'package:ci.nsu.chat/Helpers/custom_menu_clipper.dart';
 import 'package:ci.nsu.chat/Pages/Sidebar/menu_item.dart';
 import 'package:ci.nsu.chat/Services/authentication_service.dart';
 import 'package:provider/provider.dart';
@@ -41,85 +43,35 @@ class _SideBarState extends State<SideBar>
 
   @override
   Widget build(BuildContext context) {
-    final User user = context.watch<User>();
+    final User user = Provider.of<User>(context);
     final screenWidth = MediaQuery.of(context).size.width;
+
     return StreamBuilder<bool>(
       initialData: false,
       stream: isSideBarOpenedStream,
-      builder: (context, isSdeBarOpenedAsync) {
+      builder: (context, isSideBarOpenedAsync) {
         return AnimatedPositioned(
           duration: _animationDuration,
           top: 0,
           bottom: 0,
-          left: isSdeBarOpenedAsync.data ? 0 : -screenWidth,
-          right: isSdeBarOpenedAsync.data ? 0 : screenWidth - 40,
+          left: isSideBarOpenedAsync.data ? 0 : -screenWidth,
+          right: isSideBarOpenedAsync.data ? 70 : screenWidth - 40,
           child: Row(
             children: [
               Expanded(
                   child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                color: Colors.indigo,
+                color: AppColors.secondColor,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 50,
-                        ),
-                        CachedNetworkImage(
-                          imageUrl: user.photoURL,
-                          imageBuilder: (context, imageProvider) => Container(
-                            child: CircleAvatar(
-                              backgroundImage: imageProvider,
-                              radius: 45.0,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          user.displayName,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          user.email,
-                          style: TextStyle(
-                            color: Color(0xFF1BB5FD),
-                            fontSize: 16,
-                          ),
-                        ),
-                        Divider(
-                          height: 40,
-                          thickness: 0.5,
-                          color: Colors.white.withOpacity(0.5),
-                          indent: 32,
-                          endIndent: 32,
-                        ),
-                      ],
-                    ),
-                    MenuItem(
-                      icon: Icons.exit_to_app,
-                      title: 'Выход',
-                      onTap: () async {
-                        // onIconPressed();
-                        await context
-                            .read<AuthenticationService>()
-                            .signOutUser();
-                      },
-                    )
+                    _userProfileBuilder(user),
+                    _menuBottomBuilder(),
                   ],
                 ),
               )),
               Align(
-                alignment: Alignment(0, -1),
+                alignment: Alignment(0, -0.9),
                 child: GestureDetector(
                   onTap: () {
                     onIconPressed();
@@ -129,7 +81,7 @@ class _SideBarState extends State<SideBar>
                     child: Container(
                       width: 35,
                       height: 110,
-                      color: Colors.indigo,
+                      color: Color(0xff312058),
                       alignment: Alignment.centerLeft,
                       child: AnimatedIcon(
                         progress: _animationController.view,
@@ -148,6 +100,78 @@ class _SideBarState extends State<SideBar>
     );
   }
 
+  Widget _menuBottomBuilder() {
+    return Column(
+      children: [
+        Divider(
+          height: 0,
+          thickness: 0.5,
+          color: Colors.white.withOpacity(0.5),
+          indent: 5,
+          endIndent: 5,
+        ),
+        MenuItem(
+          icon: Icons.exit_to_app,
+          title: 'Выход',
+          onTap: () async {
+            await context.read<AuthenticationService>().signOutUser();
+          },
+        ),
+        SizedBox(
+          height: 10,
+        ),
+      ],
+    );
+  }
+
+  Widget _userProfileBuilder(User user) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 50,
+        ),
+        CachedNetworkImage(
+          imageUrl: user.photoURL,
+          imageBuilder: (context, imageProvider) => Container(
+            child: CircleAvatar(
+              backgroundImage: imageProvider,
+              radius: 45.0,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Text(
+          user.displayName,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: AppColors.textColor,
+              fontSize: 16,
+              fontWeight: FontWeight.w800),
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Text(
+          user.email,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: AppColors.thirdColor,
+            fontSize: 16,
+          ),
+        ),
+        Divider(
+          height: 20,
+          thickness: 0.5,
+          color: Colors.white.withOpacity(0.5),
+          indent: 5,
+          endIndent: 5,
+        ),
+      ],
+    );
+  }
+
   void onIconPressed() {
     final animationStatus = _animationController.status;
     final isAnmationCompleted = animationStatus == AnimationStatus.completed;
@@ -159,30 +183,5 @@ class _SideBarState extends State<SideBar>
       isSideBarOpenedSink.add(true);
       _animationController.forward();
     }
-  }
-}
-
-class CustomMenuClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Paint paint = Paint();
-    paint.color = Colors.white;
-
-    final width = size.width;
-    final height = size.height;
-
-    Path path = Path();
-    path.moveTo(0, 0);
-    path.quadraticBezierTo(0, 8, 10, 16);
-    path.quadraticBezierTo(width - 1, height / 2 - 20, width, height / 2);
-    path.quadraticBezierTo(width + 1, height / 2 + 20, 10, height - 16);
-    path.quadraticBezierTo(0, height - 8, 0, height);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return true;
   }
 }

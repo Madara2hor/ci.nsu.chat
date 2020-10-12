@@ -1,3 +1,4 @@
+import 'package:ci.nsu.chat/Helpers/app_colors.dart';
 import 'package:ci.nsu.chat/Helpers/dialog_helper.dart';
 import 'package:ci.nsu.chat/Services/authentication_service.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,6 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  bool isTryToSignIn = false;
   TextEditingController _emailController;
   TextEditingController _passwordController;
 
@@ -42,6 +42,7 @@ class _SignInPageState extends State<SignInPage> {
                 child: Text(
                   'ci.nsu',
                   style: TextStyle(
+                    color: AppColors.textColor,
                     fontSize: 66.0,
                     fontWeight: FontWeight.bold,
                   ),
@@ -52,6 +53,7 @@ class _SignInPageState extends State<SignInPage> {
                 child: Text(
                   'chat',
                   style: TextStyle(
+                    color: AppColors.textColor,
                     fontSize: 80.0,
                     fontWeight: FontWeight.bold,
                   ),
@@ -64,14 +66,14 @@ class _SignInPageState extends State<SignInPage> {
                   style: TextStyle(
                       fontSize: 80.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.indigo),
+                      color: AppColors.thirdColor),
                 ),
               ),
             ],
           )),
           Container(
             child: Center(
-              child: Image(image: AssetImage('assets/img/programmer.png')),
+              child: Image.asset('assets/img/programmer.png'),
             ),
           ),
           Container(
@@ -85,14 +87,25 @@ class _SignInPageState extends State<SignInPage> {
                   onTap: () async {
                     await context
                         .read<AuthenticationService>()
-                        .googleSignIn(context);
+                        .googleSignIn()
+                        .then((user) => {
+                              if (user == null)
+                                {
+                                  DialogHelper.warning(
+                                      context,
+                                      DialogContent(
+                                        text:
+                                            'Для входа в чат нужен аккаунта колледжа.',
+                                        title: 'Попался!',
+                                      ))
+                                }
+                            });
                   },
                   child: Container(
                       height: 50.0,
                       child: Material(
                           borderRadius: BorderRadius.circular(25.0),
-                          shadowColor: Colors.indigoAccent,
-                          color: Colors.indigo,
+                          color: AppColors.secondColor,
                           elevation: 7.0,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -135,7 +148,7 @@ class _SignInPageState extends State<SignInPage> {
                     },
                     child: Text('Восстановить пароль',
                         style: TextStyle(
-                          color: Colors.indigo,
+                          color: AppColors.textColor,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Montserrat',
                           decoration: TextDecoration.underline,
@@ -149,5 +162,14 @@ class _SignInPageState extends State<SignInPage> {
         ],
       ),
     );
+  }
+
+  void _showWrongEmailDialog() {
+    DialogHelper.warning(
+        context,
+        DialogContent(
+          text: 'Для входа в чат нужен аккаунта колледжа.',
+          title: 'Попался!',
+        ));
   }
 }

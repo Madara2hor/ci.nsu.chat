@@ -1,3 +1,4 @@
+import 'package:ci.nsu.chat/Helpers/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class MenuItem extends StatelessWidget {
@@ -19,17 +20,17 @@ class MenuItem extends StatelessWidget {
             Icon(
               icon,
               color: Colors.cyan,
-              size: 30,
+              size: 22,
             ),
             SizedBox(
-              width: 20,
+              width: 10,
             ),
             Text(
               title,
               style: TextStyle(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 26,
-                  color: Colors.white),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16,
+                  color: AppColors.textColor),
             )
           ],
         ),

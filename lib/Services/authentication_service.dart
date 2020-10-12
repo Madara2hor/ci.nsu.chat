@@ -1,6 +1,4 @@
-import 'package:ci.nsu.chat/Helpers/dialog_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthenticationService {
@@ -24,7 +22,7 @@ class AuthenticationService {
     }
   }
 
-  Future<User> googleSignIn(BuildContext context) async {
+  Future<User> googleSignIn() async {
     GoogleSignInAccount googleSignInAccount = await _gooleSignIn.signIn();
     if (googleSignInAccount != null &&
         googleSignInAccount.email.contains('mer.ci.nsu.ru')) {
@@ -35,6 +33,7 @@ class AuthenticationService {
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken);
 
+      // ignore: unused_local_variable
       UserCredential result =
           await _firebaseAuth.signInWithCredential(credential);
 
@@ -43,12 +42,7 @@ class AuthenticationService {
       return user;
     } else {
       print('Authentification failed');
-      DialogHelper.warning(
-          context,
-          DialogContent(
-            text: 'Для входа в чат нужен аккаунта колледжа.',
-            title: 'Попался!',
-          ));
+
       signOutUser();
 
       return null;

@@ -1,3 +1,4 @@
+import 'package:ci.nsu.chat/Helpers/app_colors.dart';
 import 'package:ci.nsu.chat/Services/authentication_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Pages/Sidebar/sidebar_layout.dart';
 import 'Pages/signIn.dart';
-import 'Pages/home.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,17 +30,12 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            scaffoldBackgroundColor: Colors.white,
-            primaryColor: Colors.indigo,
+            scaffoldBackgroundColor: AppColors.mainColor,
+            primaryColor: AppColors.secondColor,
           ),
           title: 'ci.nsu.chat',
           initialRoute: '/authWrapper',
-          routes: {
-            '/authWrapper': (context) => AuthenticationWrapper(),
-            '/': (context) => HomePage(),
-            '/signIn': (context) => SignInPage(),
-            '/sidebar': (context) => SideBarLayout(),
-          }),
+          routes: {'/authWrapper': (context) => AuthenticationWrapper()}),
     );
   }
 }
@@ -48,12 +43,8 @@ class MyApp extends StatelessWidget {
 class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final firebaseUser = context.watch<User>();
-
-    if (firebaseUser == null) {
-      return SignInPage();
-    } else {
-      return SideBarLayout();
-    }
+    return Consumer<User>(
+        builder: (context, user, child) =>
+            user == null ? SignInPage() : SideBarLayout());
   }
 }
