@@ -1,4 +1,5 @@
-import 'package:ci.nsu.chat/Helpers/app_colors.dart';
+import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
+
 import 'package:flutter/material.dart';
 
 class MenuItem extends StatelessWidget {

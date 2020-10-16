@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'dialog_helper.dart';
+import 'models/dialog_content.dart';
+import 'models/dialog_style.dart';
 
 class CustomAlertDialog extends StatelessWidget {
   final DialogStyle style;
