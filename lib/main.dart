@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'locator.dart';
+import 'ui/shared/routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +31,8 @@ class MyApp extends StatelessWidget {
           ),
           title: 'ci.nsu.chat',
           initialRoute: locator<AuthenticationService>().currentUser == null
-              ? 'signIn'
-              : 'sidebar',
+              ? Routes.signInRoute
+              : Routes.sideBarRoute,
           onGenerateRoute: Router.generateRoute,
         ));
   }

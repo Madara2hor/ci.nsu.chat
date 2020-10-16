@@ -21,11 +21,4 @@ class SignInModel extends BaseModel {
 
     return true;
   }
-
-  bool isAuth() {
-    if (_authenticationService.currentUser == null) {
-      return false;
-    }
-    return true;
-  }
 }

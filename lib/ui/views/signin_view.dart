@@ -2,6 +2,7 @@ import 'package:ci.nsu.chat/core/enums/viewState.dart';
 import 'package:ci.nsu.chat/core/viewmodels/signin_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:ci.nsu.chat/ui/shared/dialog_helper.dart';
+import 'package:ci.nsu.chat/ui/shared/routes.dart';
 import 'package:ci.nsu.chat/ui/widgets/models/dialog_content.dart';
 
 import 'package:flutter/material.dart';
@@ -121,7 +122,7 @@ class _SignInViewState extends State<SignInView> {
                   if (!isLogin) {
                     _showWrongEmailDialog();
                   } else {
-                    Navigator.pushNamed(context, 'sidebar');
+                    Navigator.pushNamed(context, Routes.sideBarRoute);
                   }
                 },
                 child: Container(

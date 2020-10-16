@@ -2,23 +2,54 @@ import 'package:ci.nsu.chat/core/enums/viewState.dart';
 import 'package:ci.nsu.chat/core/models/db_user_model.dart';
 import 'package:ci.nsu.chat/core/services/database_service.dart';
 import 'package:ci.nsu.chat/core/viewmodels/base_model.dart';
-import 'package:ci.nsu.chat/locator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ChatRoomsModel extends BaseModel {
+import '../../locator.dart';
+
+class SearchModel extends BaseModel {
   final DatabaseService _databaseService = locator<DatabaseService>();
 
-  Future<List<dbUser>> searchUser(String displayName) async {
+  static List<dbUser> _filtredUsers = [];
+  static List<dbUser> _users = [];
+
+  SearchModel() {
+    getUsers();
+  }
+
+  refreshUsers() {
+    _filtredUsers = _users;
+  }
+
+  searchUser(String displayName) async {
+    setState(ViewState.Busy);
+
+    for (int i = 0; i < _users.length; i++) {
+      _filtredUsers = [];
+      if (_users[i]
+          .displayName
+          .toLowerCase()
+          .contains(displayName.toLowerCase())) {
+        _filtredUsers.add(_users[i]);
+      }
+    }
+
+    setState(ViewState.Idle);
+  }
+
+  getUsers() async {
     setState(ViewState.Busy);
     QuerySnapshot querySnapshot = await _databaseService.getUsers();
-    List<dbUser> users = [];
     for (int i = 0; i < querySnapshot.docs.length; i++) {
-      users.add(dbUser(
+      _users.add(dbUser(
           querySnapshot.docs[i].data()['displayName'],
           querySnapshot.docs[i].data()['email'],
           querySnapshot.docs[i].data()['photoURL']));
     }
+
+    _filtredUsers = _users;
+
     setState(ViewState.Idle);
-    return users;
   }
+
+  List<dbUser> get users => _filtredUsers;
 }

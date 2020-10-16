@@ -1,14 +1,11 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:ci.nsu.chat/core/services/authentication_service.dart';
 import 'package:ci.nsu.chat/core/viewmodels/sidebar_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:ci.nsu.chat/Helpers/custom_menu_clipper.dart';
+import 'package:ci.nsu.chat/ui/shared/routes.dart';
 import 'package:ci.nsu.chat/ui/widgets/menu_item.dart';
-import 'package:ci.nsu.chat/ui/widgets/user_profile.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ci.nsu.chat/ui/widgets/user_description_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -47,8 +44,11 @@ class _SideBarViewState extends State<SideBarView>
 
   @override
   Widget build(BuildContext context) {
-    //final User user = Provider.of<User>(context);
     final screenWidth = MediaQuery.of(context).size.width;
+    final List<MenuItem> menuItems = [
+      MenuItem(icon: Icons.message, title: "Чат", onTap: null),
+      MenuItem(icon: Icons.person, title: "Пользователи", onTap: null),
+    ];
 
     return BaseView<SideBarModel>(
         builder: (context, model, child) => StreamBuilder<bool>(
@@ -68,9 +68,20 @@ class _SideBarViewState extends State<SideBarView>
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         color: AppColors.secondColor,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            UserProfile(user: model.currentUser),
+                            UserDescriptionTile(user: model.currentUser),
+                            Flexible(
+                              flex: 2,
+                              child: ListView.builder(
+                                  itemCount: menuItems.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return MenuItem(
+                                        icon: menuItems[index].icon,
+                                        title: menuItems[index].title,
+                                        onTap: menuItems[index].onTap);
+                                  }),
+                            ),
                             _menuBottomBuilder(model),
                           ],
                         ),
@@ -126,7 +137,8 @@ class _SideBarViewState extends State<SideBarView>
           onTap: () async {
             var isSignOut = await model.signOut();
             if (isSignOut) {
-              Navigator.pushNamed(context, 'signIn');
+              onIconPressed();
+              Navigator.pushNamed(context, Routes.signInRoute);
             } else {
               print("Logout error alert");
             }
