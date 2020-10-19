@@ -1,10 +1,11 @@
 import 'package:ci.nsu.chat/core/services/authentication_service.dart';
 import 'package:ci.nsu.chat/core/services/database_service.dart';
-import 'package:ci.nsu.chat/core/viewmodels/chat_rooms_model.dart';
-import 'package:ci.nsu.chat/core/viewmodels/search_model.dart';
+import 'package:ci.nsu.chat/core/viewmodels/chat_list_model.dart';
+import 'package:ci.nsu.chat/core/viewmodels/users_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/sidebar_layout_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/sidebar_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/signin_model.dart';
+import 'package:ci.nsu.chat/ui/widgets/models/user_search_tile_model.dart';
 
 import 'package:get_it/get_it.dart';
 
@@ -16,7 +17,8 @@ void setupLocator() {
 
   locator.registerFactory(() => SignInModel());
   locator.registerFactory(() => SideBarModel());
-  locator.registerFactory(() => ChatRoomsModel());
-  locator.registerFactory(() => SearchModel());
+  locator.registerFactory(() => ChatListModel());
+  locator.registerFactory(() => UsersModel());
   locator.registerFactory(() => SideBarLayoutModel());
+  locator.registerFactory(() => UserSearchTileModel());
 }

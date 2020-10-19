@@ -5,7 +5,7 @@ import 'package:ci.nsu.chat/core/viewmodels/base_model.dart';
 import 'package:ci.nsu.chat/locator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ChatRoomsModel extends BaseModel {
+class ChatListModel extends BaseModel {
   final DatabaseService _databaseService = locator<DatabaseService>();
 
   Future<List<dbUser>> searchUser(String displayName) async {

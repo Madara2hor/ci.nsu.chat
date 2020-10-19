@@ -1,19 +1,19 @@
-import 'package:ci.nsu.chat/core/viewmodels/chat_rooms_model.dart';
+import 'package:ci.nsu.chat/core/viewmodels/chat_list_model.dart';
 import 'package:ci.nsu.chat/ui/views/base_view.dart';
 import 'package:flutter/material.dart';
 
-class ChatRoomsView extends StatefulWidget {
+class ChatListView extends StatefulWidget {
   @override
-  _ChatRoomsViewState createState() => _ChatRoomsViewState();
+  _ChatListViewState createState() => _ChatListViewState();
 }
 
-class _ChatRoomsViewState extends State<ChatRoomsView> {
+class _ChatListViewState extends State<ChatListView> {
   //TextEditingController _searchController = TextEditingController();
   //bool _folded = true;
 
   @override
   Widget build(BuildContext context) {
-    return BaseView<ChatRoomsModel>(
+    return BaseView<ChatListModel>(
         builder: (context, model, child) => Scaffold(
                 body: Center(
               child: Text(

@@ -1,23 +1,23 @@
 import 'package:ci.nsu.chat/core/enums/viewState.dart';
-import 'package:ci.nsu.chat/core/viewmodels/search_model.dart';
+import 'package:ci.nsu.chat/core/viewmodels/users_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
-import 'package:ci.nsu.chat/ui/widgets/search_tile.dart';
+import 'package:ci.nsu.chat/ui/widgets/user_search_tile.dart';
 import 'package:flutter/material.dart';
 
 import 'base_view.dart';
 
-class SearchView extends StatefulWidget {
+class UsersView extends StatefulWidget {
   @override
-  _SearchViewState createState() => _SearchViewState();
+  _UsersViewState createState() => _UsersViewState();
 }
 
-class _SearchViewState extends State<SearchView> {
+class _UsersViewState extends State<UsersView> {
   TextEditingController _searchController = TextEditingController();
   bool _folded = true;
 
   @override
   Widget build(BuildContext context) {
-    return BaseView<SearchModel>(
+    return BaseView<UsersModel>(
       builder: (context, model, child) => Scaffold(
           resizeToAvoidBottomPadding: false,
           floatingActionButton: AnimatedContainer(
@@ -91,7 +91,7 @@ class _SearchViewState extends State<SearchView> {
     return Center(child: CircularProgressIndicator());
   }
 
-  Widget _buildSearchList(SearchModel model) {
+  Widget _buildSearchList(UsersModel model) {
     return Container(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 0, bottom: 0),
         child: model.users.length != 0
@@ -100,7 +100,7 @@ class _SearchViewState extends State<SearchView> {
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      SearchTile(user: model.users[index]),
+                      UserSearchTile(user: model.users[index]),
                       Divider(
                         height: 0,
                         thickness: 0.5,

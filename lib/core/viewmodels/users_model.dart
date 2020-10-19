@@ -6,13 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../locator.dart';
 
-class SearchModel extends BaseModel {
+class UsersModel extends BaseModel {
   final DatabaseService _databaseService = locator<DatabaseService>();
 
   static List<dbUser> _filtredUsers = [];
   static List<dbUser> _users = [];
 
-  SearchModel() {
+  UsersModel() {
     getUsers();
   }
 
@@ -25,9 +25,13 @@ class SearchModel extends BaseModel {
     _filtredUsers = [];
     for (int i = 0; i < _users.length; i++) {
       if (_users[i]
-          .displayName
-          .toLowerCase()
-          .contains(displayName.toLowerCase().trim())) {
+              .displayName
+              .toLowerCase()
+              .contains(displayName.toLowerCase().trim()) ||
+          _users[i]
+              .email
+              .toLowerCase()
+              .contains(displayName.toLowerCase().trim())) {
         _filtredUsers.add(_users[i]);
       }
     }

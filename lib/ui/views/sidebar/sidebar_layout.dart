@@ -1,7 +1,7 @@
 import 'package:ci.nsu.chat/core/viewmodels/sidebar_layout_model.dart';
 import 'package:ci.nsu.chat/ui/shared/route_name.dart';
-import 'package:ci.nsu.chat/ui/views/chat_rooms_view.dart';
-import 'package:ci.nsu.chat/ui/views/search_view.dart';
+import 'package:ci.nsu.chat/ui/views/chat_list_view.dart';
+import 'package:ci.nsu.chat/ui/views/users_view.dart';
 import 'package:ci.nsu.chat/ui/views/sidebar/sidebar_view.dart';
 import 'package:flutter/material.dart';
 
@@ -24,9 +24,9 @@ class SideBarLayout extends StatelessWidget {
   Widget getCurrentPage(SideBarLayoutModel model) {
     switch (model.currentPage) {
       case RouteName.chatRoomsRoute:
-        return ChatRoomsView();
+        return ChatListView();
       case RouteName.searchRoute:
-        return SearchView();
+        return UsersView();
       default:
         return Scaffold(
             body: Center(
