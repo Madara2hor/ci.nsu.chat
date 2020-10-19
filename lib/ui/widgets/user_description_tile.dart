@@ -19,6 +19,7 @@ class UserDescriptionTile extends StatelessWidget {
           imageUrl: user != null
               ? user.photoURL
               : "https://i.stack.imgur.com/uFPpM.png?s=328&g=1",
+          placeholder: (context, url) => CircularProgressIndicator(),
           imageBuilder: (context, imageProvider) => Container(
             child: CircleAvatar(
               backgroundImage: imageProvider,

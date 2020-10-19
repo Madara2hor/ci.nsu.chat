@@ -22,13 +22,12 @@ class SearchModel extends BaseModel {
 
   searchUser(String displayName) async {
     setState(ViewState.Busy);
-
+    _filtredUsers = [];
     for (int i = 0; i < _users.length; i++) {
-      _filtredUsers = [];
       if (_users[i]
           .displayName
           .toLowerCase()
-          .contains(displayName.toLowerCase())) {
+          .contains(displayName.toLowerCase().trim())) {
         _filtredUsers.add(_users[i]);
       }
     }
@@ -38,14 +37,17 @@ class SearchModel extends BaseModel {
 
   getUsers() async {
     setState(ViewState.Busy);
-    QuerySnapshot querySnapshot = await _databaseService.getUsers();
-    for (int i = 0; i < querySnapshot.docs.length; i++) {
-      _users.add(dbUser(
-          querySnapshot.docs[i].data()['displayName'],
-          querySnapshot.docs[i].data()['email'],
-          querySnapshot.docs[i].data()['photoURL']));
-    }
 
+    QuerySnapshot querySnapshot = await _databaseService.getUsers();
+    if (querySnapshot.docs.length > _users.length) {
+      _users = [];
+      for (int i = 0; i < querySnapshot.docs.length; i++) {
+        _users.add(dbUser(
+            querySnapshot.docs[i].data()['displayName'],
+            querySnapshot.docs[i].data()['email'],
+            querySnapshot.docs[i].data()['photoURL']));
+      }
+    }
     _filtredUsers = _users;
 
     setState(ViewState.Idle);

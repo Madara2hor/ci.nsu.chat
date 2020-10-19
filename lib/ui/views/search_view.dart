@@ -1,5 +1,4 @@
 import 'package:ci.nsu.chat/core/enums/viewState.dart';
-import 'package:ci.nsu.chat/core/models/db_user_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/search_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:ci.nsu.chat/ui/widgets/search_tile.dart';
@@ -8,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'base_view.dart';
 
 class SearchView extends StatefulWidget {
-  SearchView({Key key}) : super(key: key);
-
   @override
   _SearchViewState createState() => _SearchViewState();
 }

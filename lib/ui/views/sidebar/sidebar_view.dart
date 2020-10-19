@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:ci.nsu.chat/core/viewmodels/sidebar_layout_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/sidebar_model.dart';
+import 'package:ci.nsu.chat/locator.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:ci.nsu.chat/Helpers/custom_menu_clipper.dart';
-import 'package:ci.nsu.chat/ui/shared/routes.dart';
+import 'package:ci.nsu.chat/ui/shared/route_name.dart';
 import 'package:ci.nsu.chat/ui/widgets/menu_item.dart';
 import 'package:ci.nsu.chat/ui/widgets/user_description_tile.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,9 @@ import 'package:rxdart/subjects.dart';
 import '../base_view.dart';
 
 class SideBarView extends StatefulWidget {
+  final SideBarLayoutModel layoutModel;
+
+  const SideBarView({this.layoutModel});
   @override
   _SideBarViewState createState() => _SideBarViewState();
 }
@@ -46,8 +51,18 @@ class _SideBarViewState extends State<SideBarView>
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final List<MenuItem> menuItems = [
-      MenuItem(icon: Icons.message, title: "Чат", onTap: null),
-      MenuItem(icon: Icons.person, title: "Пользователи", onTap: null),
+      MenuItem(
+          icon: Icons.message,
+          title: "Чат",
+          onTap: () {
+            widget.layoutModel.goTo(RouteName.chatRoomsRoute);
+          }),
+      MenuItem(
+          icon: Icons.person,
+          title: "Пользователи",
+          onTap: () {
+            widget.layoutModel.goTo(RouteName.searchRoute);
+          }),
     ];
 
     return BaseView<SideBarModel>(
@@ -79,7 +94,10 @@ class _SideBarViewState extends State<SideBarView>
                                     return MenuItem(
                                         icon: menuItems[index].icon,
                                         title: menuItems[index].title,
-                                        onTap: menuItems[index].onTap);
+                                        onTap: () {
+                                          menuItems[index].onTap();
+                                          onIconPressed();
+                                        });
                                   }),
                             ),
                             _menuBottomBuilder(model),
@@ -138,7 +156,8 @@ class _SideBarViewState extends State<SideBarView>
             var isSignOut = await model.signOut();
             if (isSignOut) {
               onIconPressed();
-              Navigator.pushNamed(context, Routes.signInRoute);
+              locator<SideBarLayoutModel>().goTo(RouteName.chatRoomsRoute);
+              Navigator.pushNamed(context, RouteName.signInRoute);
             } else {
               print("Logout error alert");
             }

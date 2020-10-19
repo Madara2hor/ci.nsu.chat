@@ -1,4 +1,4 @@
-import 'package:ci.nsu.chat/ui/router.dart';
+import 'package:ci.nsu.chat/ui/custom_router.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:ci.nsu.chat/core/services/authentication_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'locator.dart';
-import 'ui/shared/routes.dart';
+import 'ui/shared/route_name.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,9 +31,9 @@ class MyApp extends StatelessWidget {
           ),
           title: 'ci.nsu.chat',
           initialRoute: locator<AuthenticationService>().currentUser == null
-              ? Routes.signInRoute
-              : Routes.sideBarRoute,
-          onGenerateRoute: Router.generateRoute,
+              ? RouteName.signInRoute
+              : RouteName.sideBarRoute,
+          onGenerateRoute: CustomRouter.generateRoute,
         ));
   }
 }

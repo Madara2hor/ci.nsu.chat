@@ -8,8 +8,8 @@ class ChatRoomsView extends StatefulWidget {
 }
 
 class _ChatRoomsViewState extends State<ChatRoomsView> {
-  TextEditingController _searchController = TextEditingController();
-  bool _folded = true;
+  //TextEditingController _searchController = TextEditingController();
+  //bool _folded = true;
 
   @override
   Widget build(BuildContext context) {
