@@ -23,9 +23,9 @@ class SideBarLayout extends StatelessWidget {
 
   Widget getCurrentPage(SideBarLayoutModel model) {
     switch (model.currentPage) {
-      case RouteName.chatRoomsRoute:
+      case RouteName.chatListRoute:
         return ChatListView();
-      case RouteName.searchRoute:
+      case RouteName.usersRoute:
         return UsersView();
       default:
         return Scaffold(

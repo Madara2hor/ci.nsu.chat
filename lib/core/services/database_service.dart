@@ -7,6 +7,13 @@ class DatabaseService {
     return await FirebaseFirestore.instance.collection('users').get();
   }
 
+  getUser(String displayName) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .where('displayName', isEqualTo: displayName)
+        .get();
+  }
+
   uploadUserInfo(User user) async {
     Map<String, String> userInfo = {
       "displayName": user.displayName,
@@ -16,7 +23,10 @@ class DatabaseService {
     await FirebaseFirestore.instance.collection('users').add(userInfo);
   }
 
-  createChatRoom(dbUser withUser, User currentUser) async {
+  createChatRoom(DBUser withUser, User currentUser) async {
+    // if (isChatRoomExist(currentUser.email, withUser.email)) {
+
+    // }
     String chatRoomId = '${currentUser.email}_${withUser.email}'
         .replaceAll("@mer.ci.nsu.ru", "");
 
@@ -25,8 +35,28 @@ class DatabaseService {
       "users": [currentUser.displayName, withUser.displayName]
     };
     await FirebaseFirestore.instance
-        .collection('chatRoom')
+        .collection('chat_rooms')
         .doc(chatRoomId)
         .set(chatRoomMap);
+  }
+
+  getChatRooms() async {
+    return await FirebaseFirestore.instance.collection('chat_rooms').get();
+  }
+
+  Future<bool> isChatRoomExist(String firstUser, String secondUser) async {
+    QuerySnapshot querySnapshot = await getChatRooms();
+
+    String chatRoomId =
+        '${firstUser}_$secondUser'.replaceAll("@mer.ci.nsu.ru", "");
+    String reverseChatRoomId =
+        '${secondUser}_$firstUser'.replaceAll("@mer.ci.nsu.ru", "");
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      String idFromQuery = querySnapshot.docs[i].data()['chatroom_id'];
+      if (idFromQuery == chatRoomId || idFromQuery == reverseChatRoomId) {
+        return true;
+      }
+    }
+    return false;
   }
 }

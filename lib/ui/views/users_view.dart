@@ -1,6 +1,10 @@
 import 'package:ci.nsu.chat/core/enums/viewState.dart';
 import 'package:ci.nsu.chat/core/viewmodels/users_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
+import 'package:ci.nsu.chat/ui/shared/dialog_helper.dart';
+import 'package:ci.nsu.chat/ui/shared/route_name.dart';
+import 'package:ci.nsu.chat/ui/widgets/animated_search_bar.dart';
+import 'package:ci.nsu.chat/ui/widgets/models/dialog_content.dart';
 import 'package:ci.nsu.chat/ui/widgets/user_search_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -20,67 +24,10 @@ class _UsersViewState extends State<UsersView> {
     return BaseView<UsersModel>(
       builder: (context, model, child) => Scaffold(
           resizeToAvoidBottomPadding: false,
-          floatingActionButton: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            width: _folded ? 56 : 200,
-            height: 56,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
-              color: AppColors.secondColor,
-              boxShadow: kElevationToShadow[6],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(left: 16),
-                    child: !_folded
-                        ? TextField(
-                            textInputAction: TextInputAction.search,
-                            controller: _searchController,
-                            style: TextStyle(color: AppColors.textColor),
-                            onSubmitted: (value) async {
-                              await model.searchUser(_searchController.text);
-                            },
-                            decoration: InputDecoration(
-                                hintText: 'Введите имя',
-                                hintStyle:
-                                    TextStyle(color: AppColors.thirdColor),
-                                border: InputBorder.none),
-                          )
-                        : null,
-                  ),
-                ),
-                Container(
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(_folded ? 32 : 0),
-                        topRight: Radius.circular(32),
-                        bottomLeft: Radius.circular(_folded ? 32 : 0),
-                        bottomRight: Radius.circular(32),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Icon(
-                          _folded ? Icons.search : Icons.close,
-                          color: AppColors.textColor,
-                        ),
-                      ),
-                      onTap: () async {
-                        model.refreshUsers();
-                        setState(() {
-                          _folded = !_folded;
-                          _searchController.text = "";
-                        });
-                      },
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
+          floatingActionButton: AnimatedSearchBar(
+              searchController: _searchController,
+              onTap: () => model.refreshUsers(),
+              onSubmitted: () => model.searchUser(_searchController.text)),
           body: model.state == ViewState.Busy
               ? _circularProgressIndicator()
               : _buildSearchList(model)),
@@ -100,7 +47,19 @@ class _UsersViewState extends State<UsersView> {
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      UserSearchTile(user: model.users[index]),
+                      UserSearchTile(
+                        user: model.users[index],
+                        onTap: () async {
+                          var isChatCreated =
+                              await model.goToChat(model.users[index]);
+                          if (!isChatCreated) {
+                            _showWarningDialog();
+                          } else {
+                            Navigator.pushNamed(
+                                context, RouteName.chatRoomRoute);
+                          }
+                        },
+                      ),
                       Divider(
                         height: 0,
                         thickness: 0.5,
@@ -120,5 +79,14 @@ class _UsersViewState extends State<UsersView> {
                       fontSize: 28),
                 ),
               ));
+  }
+
+  void _showWarningDialog() {
+    DialogHelper.warning(
+        context,
+        DialogContent(
+          text: 'Тут ещё нельзя создавать чат с сами собой.',
+          title: 'Опаньки!',
+        ));
   }
 }

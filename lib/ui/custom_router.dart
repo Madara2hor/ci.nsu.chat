@@ -1,4 +1,5 @@
 import 'package:ci.nsu.chat/ui/shared/route_name.dart';
+import 'package:ci.nsu.chat/ui/views/chat_room_view.dart';
 import 'package:ci.nsu.chat/ui/views/sidebar/sidebar_layout.dart';
 import 'package:ci.nsu.chat/ui/views/signIn_view.dart';
 
@@ -13,6 +14,8 @@ class CustomRouter {
         return MaterialPageRoute(builder: (_) => SignInView());
       case RouteName.sideBarRoute:
         return MaterialPageRoute(builder: (_) => SideBarLayout());
+      case RouteName.chatRoomRoute:
+        return MaterialPageRoute(builder: (_) => ChatRoomView());
       default:
         return MaterialPageRoute(
             builder: (_) => Scaffold(

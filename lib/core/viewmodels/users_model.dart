@@ -1,23 +1,49 @@
 import 'package:ci.nsu.chat/core/enums/viewState.dart';
 import 'package:ci.nsu.chat/core/models/db_user_model.dart';
+import 'package:ci.nsu.chat/core/services/authentication_service.dart';
 import 'package:ci.nsu.chat/core/services/database_service.dart';
 import 'package:ci.nsu.chat/core/viewmodels/base_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../locator.dart';
 
 class UsersModel extends BaseModel {
   final DatabaseService _databaseService = locator<DatabaseService>();
+  final AuthenticationService _authenticationService =
+      locator<AuthenticationService>();
 
-  static List<dbUser> _filtredUsers = [];
-  static List<dbUser> _users = [];
+  static List<DBUser> _filtredUsers = [];
+  static List<DBUser> _users = [];
+
+  List<DBUser> get users => _filtredUsers;
 
   UsersModel() {
     getUsers();
   }
 
+  getUsers() async {
+    setState(ViewState.Busy);
+
+    QuerySnapshot querySnapshot = await _databaseService.getUsers();
+    if (querySnapshot.docs.length > _users.length) {
+      _users = [];
+      for (int i = 0; i < querySnapshot.docs.length; i++) {
+        _users.add(DBUser(
+            querySnapshot.docs[i].data()['displayName'],
+            querySnapshot.docs[i].data()['email'],
+            querySnapshot.docs[i].data()['photoURL']));
+      }
+    }
+    refreshUsers();
+
+    setState(ViewState.Idle);
+  }
+
   refreshUsers() {
+    setState(ViewState.Busy);
     _filtredUsers = _users;
+    setState(ViewState.Idle);
   }
 
   searchUser(String displayName) async {
@@ -30,7 +56,7 @@ class UsersModel extends BaseModel {
               .contains(displayName.toLowerCase().trim()) ||
           _users[i]
               .email
-              .toLowerCase()
+              .replaceAll("@mer.ci.nsu.ru", "")
               .contains(displayName.toLowerCase().trim())) {
         _filtredUsers.add(_users[i]);
       }
@@ -39,23 +65,15 @@ class UsersModel extends BaseModel {
     setState(ViewState.Idle);
   }
 
-  getUsers() async {
-    setState(ViewState.Busy);
+  Future<bool> goToChat(DBUser withUser) async {
+    User currentUser = _authenticationService.currentUser;
 
-    QuerySnapshot querySnapshot = await _databaseService.getUsers();
-    if (querySnapshot.docs.length > _users.length) {
-      _users = [];
-      for (int i = 0; i < querySnapshot.docs.length; i++) {
-        _users.add(dbUser(
-            querySnapshot.docs[i].data()['displayName'],
-            querySnapshot.docs[i].data()['email'],
-            querySnapshot.docs[i].data()['photoURL']));
-      }
+    if (currentUser.displayName == withUser.displayName) {
+      return false;
     }
-    _filtredUsers = _users;
 
-    setState(ViewState.Idle);
+    await _databaseService.createChatRoom(withUser, currentUser);
+
+    return true;
   }
-
-  List<dbUser> get users => _filtredUsers;
 }

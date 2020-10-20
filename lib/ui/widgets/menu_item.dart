@@ -3,12 +3,12 @@ import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class MenuItem extends StatelessWidget {
-  final IconData icon;
+  final String imageName;
   final String title;
   final Function onTap;
 
   const MenuItem(
-      {@required this.icon, @required this.title, @required this.onTap});
+      {@required this.imageName, @required this.title, @required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -18,20 +18,17 @@ class MenuItem extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: Row(
           children: <Widget>[
-            Icon(
-              icon,
-              color: Colors.cyan,
-              size: 22,
-            ),
+            Image(
+                color: AppColors.thirdColor,
+                height: 24,
+                width: 24,
+                image: AssetImage('assets/icons/$imageName')),
             SizedBox(
               width: 10,
             ),
             Text(
               title,
-              style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16,
-                  color: AppColors.textColor),
+              style: TextStyle(fontSize: 14, color: AppColors.textColor),
             )
           ],
         ),

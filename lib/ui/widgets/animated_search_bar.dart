@@ -1,12 +1,15 @@
-import 'package:ci.nsu.chat/core/viewmodels/base_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedSearchBar extends StatefulWidget {
   final TextEditingController searchController;
-  final BaseModel model;
+  final Function onTap;
+  final Function onSubmitted;
 
-  AnimatedSearchBar({@required this.searchController, @required this.model});
+  AnimatedSearchBar(
+      {@required this.searchController,
+      @required this.onTap,
+      @required this.onSubmitted});
 
   @override
   _AnimatedSearchBarState createState() => _AnimatedSearchBarState();
@@ -35,9 +38,10 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
                   ? TextField(
                       controller: widget.searchController,
                       style: TextStyle(color: AppColors.textColor),
+                      onSubmitted: (value) => widget.onSubmitted(),
                       decoration: InputDecoration(
                           hintText: 'Введите имя',
-                          hintStyle: TextStyle(color: AppColors.thirdColor),
+                          hintStyle: TextStyle(color: AppColors.textColor),
                           border: InputBorder.none),
                     )
                   : null,
@@ -55,12 +59,16 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Icon(
-                    _folded ? Icons.search : Icons.close,
-                    color: AppColors.textColor,
-                  ),
+                  child: Image(
+                      color: AppColors.textColor,
+                      height: 24,
+                      width: 24,
+                      image: _folded
+                          ? AssetImage('assets/icons/magnifying-glass.png')
+                          : AssetImage('assets/icons/cancel.png')),
                 ),
                 onTap: () {
+                  widget.onTap();
                   setState(() {
                     _folded = !_folded;
                     widget.searchController.text = "";

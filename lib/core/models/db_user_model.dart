@@ -1,8 +1,7 @@
-// ignore: camel_case_types
-class dbUser {
+class DBUser {
   final String displayName;
   final String email;
   final String photoURL;
 
-  dbUser(this.displayName, this.email, this.photoURL);
+  DBUser(this.displayName, this.email, this.photoURL);
 }

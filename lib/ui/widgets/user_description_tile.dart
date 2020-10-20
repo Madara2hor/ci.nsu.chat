@@ -23,7 +23,7 @@ class UserDescriptionTile extends StatelessWidget {
           imageBuilder: (context, imageProvider) => Container(
             child: CircleAvatar(
               backgroundImage: imageProvider,
-              radius: 45.0,
+              radius: 35.0,
             ),
           ),
         ),
@@ -34,9 +34,9 @@ class UserDescriptionTile extends StatelessWidget {
           user != null ? user.displayName : "anonimous",
           textAlign: TextAlign.center,
           style: TextStyle(
-              color: AppColors.textColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w800),
+            color: AppColors.textColor,
+            fontSize: 14,
+          ),
         ),
         SizedBox(
           height: 5,
@@ -46,7 +46,7 @@ class UserDescriptionTile extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(
             color: AppColors.thirdColor,
-            fontSize: 16,
+            fontSize: 13,
           ),
         ),
         Divider(

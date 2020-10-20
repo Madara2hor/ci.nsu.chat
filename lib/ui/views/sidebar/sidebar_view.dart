@@ -52,16 +52,16 @@ class _SideBarViewState extends State<SideBarView>
     final screenWidth = MediaQuery.of(context).size.width;
     final List<MenuItem> menuItems = [
       MenuItem(
-          icon: Icons.message,
+          imageName: 'chat.png',
           title: "Чат",
           onTap: () {
-            widget.layoutModel.goTo(RouteName.chatRoomsRoute);
+            widget.layoutModel.goTo(RouteName.chatListRoute);
           }),
       MenuItem(
-          icon: Icons.person,
+          imageName: 'avatar.png',
           title: "Пользователи",
           onTap: () {
-            widget.layoutModel.goTo(RouteName.searchRoute);
+            widget.layoutModel.goTo(RouteName.usersRoute);
           }),
     ];
 
@@ -92,7 +92,7 @@ class _SideBarViewState extends State<SideBarView>
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return MenuItem(
-                                        icon: menuItems[index].icon,
+                                        imageName: menuItems[index].imageName,
                                         title: menuItems[index].title,
                                         onTap: () {
                                           menuItems[index].onTap();
@@ -150,13 +150,13 @@ class _SideBarViewState extends State<SideBarView>
           endIndent: 5,
         ),
         MenuItem(
-          icon: Icons.exit_to_app,
+          imageName: 'logout.png',
           title: 'Выход',
           onTap: () async {
             var isSignOut = await model.signOut();
             if (isSignOut) {
               onIconPressed();
-              locator<SideBarLayoutModel>().goTo(RouteName.chatRoomsRoute);
+              locator<SideBarLayoutModel>().goTo(RouteName.chatListRoute);
               Navigator.pushNamed(context, RouteName.signInRoute);
             } else {
               print("Logout error alert");

@@ -5,7 +5,6 @@ import 'package:ci.nsu.chat/core/viewmodels/users_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/sidebar_layout_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/sidebar_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/signin_model.dart';
-import 'package:ci.nsu.chat/ui/widgets/models/user_search_tile_model.dart';
 
 import 'package:get_it/get_it.dart';
 
@@ -20,5 +19,4 @@ void setupLocator() {
   locator.registerFactory(() => ChatListModel());
   locator.registerFactory(() => UsersModel());
   locator.registerFactory(() => SideBarLayoutModel());
-  locator.registerFactory(() => UserSearchTileModel());
 }
