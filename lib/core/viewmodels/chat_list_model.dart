@@ -1,6 +1,7 @@
 import 'package:ci.nsu.chat/core/enums/viewState.dart';
 import 'package:ci.nsu.chat/core/models/chat_list_item_model.dart';
 import 'package:ci.nsu.chat/core/models/db_user_model.dart';
+import 'package:ci.nsu.chat/core/models/message_model.dart';
 import 'package:ci.nsu.chat/core/services/authentication_service.dart';
 import 'package:ci.nsu.chat/core/services/database_service.dart';
 import 'package:ci.nsu.chat/core/viewmodels/base_model.dart';
@@ -47,7 +48,17 @@ class ChatListModel extends BaseModel {
               chattedUserSnapshot.docs[0].data()['email'],
               chattedUserSnapshot.docs[0].data()['photoURL']);
 
-          _chatList.add(ChatListItemModel(chatRoomId, chattedUser));
+          QuerySnapshot messagesSnapshot =
+              await _databaseService.getMessages(chatRoomId);
+
+          List<MessageModel> messages = [];
+          for (int i = 0; i < messagesSnapshot.docs.length; i++) {
+            String message = messagesSnapshot.docs[i].data()['message'];
+            String sendBy = messagesSnapshot.docs[i].data()['send_by'];
+            messages.add(MessageModel(message, sendBy));
+          }
+
+          _chatList.add(ChatListItemModel(chatRoomId, chattedUser, messages));
         }
       }
     }
@@ -82,4 +93,20 @@ class ChatListModel extends BaseModel {
 
     setState(ViewState.Idle);
   }
+
+  // getMessages(String chatId, int chatIndex) async {
+  //   setState(ViewState.Busy);
+
+  //   QuerySnapshot messagesSnapshot = await _databaseService.getMessages(chatId);
+  //   if (messagesSnapshot.docs.length > _chatList[chatIndex].messages.length) {
+  //     _chatList[chatIndex].messages.clear();
+  //     for (int i = 0; i < messagesSnapshot.docs.length; i++) {
+  //       String message = messagesSnapshot.docs[i].data()['messsage'];
+  //       String sendBy = messagesSnapshot.docs[i].data()['send_by'];
+  //       _chatList[chatIndex].messages.add(MessageModel(message, sendBy));
+  //     }
+  //   }
+
+  //   setState(ViewState.Idle);
+  // }
 }

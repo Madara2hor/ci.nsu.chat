@@ -1,4 +1,5 @@
 import 'package:ci.nsu.chat/core/models/db_user_model.dart';
+import 'package:ci.nsu.chat/core/models/message_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -42,6 +43,27 @@ class DatabaseService {
 
   getChatRooms() async {
     return await FirebaseFirestore.instance.collection('chat_rooms').get();
+  }
+
+  sendMessage(String chatRoomId, MessageModel message) async {
+    Map<String, dynamic> messageMap = {
+      "message": message.message,
+      "send_by": message.sendBy
+    };
+
+    await FirebaseFirestore.instance
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('chat')
+        .add(messageMap);
+  }
+
+  getMessages(String chatRoomId) async {
+    return await FirebaseFirestore.instance
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('chat')
+        .get();
   }
 
   Future<bool> isChatRoomExist(String firstUser, String secondUser) async {

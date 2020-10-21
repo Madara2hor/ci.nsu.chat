@@ -15,7 +15,8 @@ class CustomRouter {
       case RouteName.sideBarRoute:
         return MaterialPageRoute(builder: (_) => SideBarLayout());
       case RouteName.chatRoomRoute:
-        return MaterialPageRoute(builder: (_) => ChatRoomView());
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => ChatRoomView());
       default:
         return MaterialPageRoute(
             builder: (_) => Scaffold(

@@ -19,7 +19,7 @@ class _ChatListViewState extends State<ChatListView> {
   Widget build(BuildContext context) {
     return BaseView<ChatListModel>(
       builder: (context, model, child) => Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomPadding: true,
           floatingActionButton: AnimatedSearchBar(
               searchController: _searchController,
               onTap: () => model.refreshChatList(),
@@ -44,9 +44,10 @@ class _ChatListViewState extends State<ChatListView> {
                   return Column(
                     children: [
                       ChatListTile(
-                          user: model.chatList[index].chattedUser,
+                          chatItem: model.chatList[index],
                           onTap: () => Navigator.pushNamed(
-                              context, RouteName.chatRoomRoute)),
+                              context, RouteName.chatRoomRoute,
+                              arguments: model.chatList[index])),
                       Divider(
                         height: 0,
                         thickness: 0.5,

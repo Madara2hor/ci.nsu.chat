@@ -1,6 +1,7 @@
 import 'package:ci.nsu.chat/core/services/authentication_service.dart';
 import 'package:ci.nsu.chat/core/services/database_service.dart';
 import 'package:ci.nsu.chat/core/viewmodels/chat_list_model.dart';
+import 'package:ci.nsu.chat/core/viewmodels/chat_room_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/users_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/sidebar_layout_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/sidebar_model.dart';
@@ -19,4 +20,5 @@ void setupLocator() {
   locator.registerFactory(() => ChatListModel());
   locator.registerFactory(() => UsersModel());
   locator.registerFactory(() => SideBarLayoutModel());
+  locator.registerFactory(() => ChatRoomModel());
 }

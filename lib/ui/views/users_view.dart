@@ -17,13 +17,12 @@ class UsersView extends StatefulWidget {
 
 class _UsersViewState extends State<UsersView> {
   TextEditingController _searchController = TextEditingController();
-  bool _folded = true;
 
   @override
   Widget build(BuildContext context) {
     return BaseView<UsersModel>(
       builder: (context, model, child) => Scaffold(
-          resizeToAvoidBottomPadding: false,
+          resizeToAvoidBottomPadding: true,
           floatingActionButton: AnimatedSearchBar(
               searchController: _searchController,
               onTap: () => model.refreshUsers(),

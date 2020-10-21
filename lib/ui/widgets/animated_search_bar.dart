@@ -37,11 +37,16 @@ class _AnimatedSearchBarState extends State<AnimatedSearchBar> {
               child: !_folded
                   ? TextField(
                       controller: widget.searchController,
+                      textInputAction: TextInputAction.search,
                       style: TextStyle(color: AppColors.textColor),
-                      onSubmitted: (value) => widget.onSubmitted(),
+                      onSubmitted: (value) => {
+                        if (widget.searchController.text != "")
+                          {widget.onSubmitted()}
+                      },
                       decoration: InputDecoration(
-                          hintText: 'Введите имя',
-                          hintStyle: TextStyle(color: AppColors.textColor),
+                          hintText: 'Поиск...',
+                          hintStyle: TextStyle(
+                              color: AppColors.textColor, fontSize: 14),
                           border: InputBorder.none),
                     )
                   : null,
