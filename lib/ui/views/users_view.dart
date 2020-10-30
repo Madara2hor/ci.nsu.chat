@@ -49,13 +49,14 @@ class _UsersViewState extends State<UsersView> {
                       UserSearchTile(
                         user: model.users[index],
                         onTap: () async {
-                          var isChatCreated =
+                          var chatItem =
                               await model.goToChat(model.users[index]);
-                          if (!isChatCreated) {
+                          if (chatItem == null) {
                             _showWarningDialog();
                           } else {
                             Navigator.pushNamed(
-                                context, RouteName.chatRoomRoute);
+                                context, RouteName.chatRoomRoute,
+                                arguments: chatItem);
                           }
                         },
                       ),

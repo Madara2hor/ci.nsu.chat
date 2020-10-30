@@ -19,7 +19,7 @@ class _ChatListViewState extends State<ChatListView> {
   Widget build(BuildContext context) {
     return BaseView<ChatListModel>(
       builder: (context, model, child) => Scaffold(
-          resizeToAvoidBottomPadding: true,
+          resizeToAvoidBottomPadding: false,
           floatingActionButton: AnimatedSearchBar(
               searchController: _searchController,
               onTap: () => model.refreshChatList(),

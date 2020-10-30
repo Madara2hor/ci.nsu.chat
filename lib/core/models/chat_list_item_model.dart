@@ -4,7 +4,7 @@ import 'message_model.dart';
 class ChatListItemModel {
   final String chatId;
   final DBUser chattedUser;
-  final List<MessageModel> messages;
+  List<MessageModel> messages;
 
   ChatListItemModel(this.chatId, this.chattedUser, this.messages);
 }

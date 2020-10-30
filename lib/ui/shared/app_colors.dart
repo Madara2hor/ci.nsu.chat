@@ -6,4 +6,7 @@ extension AppColors on Color {
   static final Color thirdColor = Color(0xFF1BB5FD);
 
   static final Color textColor = Color(0xffd7d7d7);
+
+  static final Color myMessageColor = Color(0xff312058);
+  static final Color somebodyMessageColor = Color(0xff125d61);
 }

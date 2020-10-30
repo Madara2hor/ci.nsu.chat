@@ -39,6 +39,10 @@ dependencies:
   provider: ^4.3.2+2
   
   cached_network_image: ^2.3.2+1
+  bubble: ^1.1.9+1
+
+  intl: ^0.16.1
+  
 
 dev_dependencies:
   flutter_test:

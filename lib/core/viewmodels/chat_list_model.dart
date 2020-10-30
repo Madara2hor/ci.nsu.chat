@@ -55,15 +55,17 @@ class ChatListModel extends BaseModel {
           for (int i = 0; i < messagesSnapshot.docs.length; i++) {
             String message = messagesSnapshot.docs[i].data()['message'];
             String sendBy = messagesSnapshot.docs[i].data()['send_by'];
-            messages.add(MessageModel(message, sendBy));
+            String dateTime = messagesSnapshot.docs[i].data()['date_time'];
+            messages.add(MessageModel(message, sendBy, dateTime));
           }
-
-          _chatList.add(ChatListItemModel(chatRoomId, chattedUser, messages));
+          if (messages.length > 0) {
+            _chatList.add(ChatListItemModel(chatRoomId, chattedUser, messages));
+          }
         }
       }
     }
     refreshChatList();
-
+    sortChatList();
     setState(ViewState.Idle);
   }
 
@@ -71,6 +73,20 @@ class ChatListModel extends BaseModel {
     setState(ViewState.Busy);
     _filtredChatList = _chatList;
     setState(ViewState.Idle);
+  }
+
+  sortChatList() {
+    if (_chatList == null || _chatList.length == 0) {
+      return;
+    }
+    for (int i = 0; i < _chatList.length; i++) {
+      _chatList[i].messages.sort(
+          (a, b) => a.dateTime.toString().compareTo(b.dateTime.toString()));
+    }
+
+    _chatList.sort((a, b) => b.messages[b.messages.length - 1].dateTime
+        .toString()
+        .compareTo(a.messages[a.messages.length - 1].dateTime.toString()));
   }
 
   searchChatRoom(String displayName) async {

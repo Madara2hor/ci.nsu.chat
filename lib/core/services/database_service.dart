@@ -4,11 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class DatabaseService {
-  getUsers() async {
+  Future<QuerySnapshot> getUsers() async {
     return await FirebaseFirestore.instance.collection('users').get();
   }
 
-  getUser(String displayName) async {
+  Future<QuerySnapshot> getUser(String displayName) async {
     return await FirebaseFirestore.instance
         .collection('users')
         .where('displayName', isEqualTo: displayName)
@@ -24,31 +24,46 @@ class DatabaseService {
     await FirebaseFirestore.instance.collection('users').add(userInfo);
   }
 
-  createChatRoom(DBUser withUser, User currentUser) async {
-    // if (isChatRoomExist(currentUser.email, withUser.email)) {
+  Future<DocumentSnapshot> createChatRoom(
+      DBUser withUser, User currentUser) async {
+    Future<DocumentSnapshot> chatRoomDocument =
+        tryGetExistChatRoom(currentUser.email, withUser.email);
+    if (chatRoomDocument == null) {
+      String chatRoomId = '${currentUser.email}_${withUser.email}'
+          .replaceAll("@mer.ci.nsu.ru", "");
 
-    // }
-    String chatRoomId = '${currentUser.email}_${withUser.email}'
-        .replaceAll("@mer.ci.nsu.ru", "");
+      Map<String, dynamic> chatRoomMap = {
+        "chatroom_id": chatRoomId,
+        "users": [currentUser.displayName, withUser.displayName]
+      };
 
-    Map<String, dynamic> chatRoomMap = {
-      "chatroom_id": chatRoomId,
-      "users": [currentUser.displayName, withUser.displayName]
-    };
-    await FirebaseFirestore.instance
-        .collection('chat_rooms')
-        .doc(chatRoomId)
-        .set(chatRoomMap);
+      await FirebaseFirestore.instance
+          .collection('chat_rooms')
+          .doc(chatRoomId)
+          .set(chatRoomMap);
+
+      return getChatRoomById(chatRoomId);
+    } else {
+      return chatRoomDocument;
+    }
   }
 
-  getChatRooms() async {
+  Future<QuerySnapshot> getChatRooms() async {
     return await FirebaseFirestore.instance.collection('chat_rooms').get();
+  }
+
+  Future<DocumentSnapshot> getChatRoomById(String chatRoomId) async {
+    return await FirebaseFirestore.instance
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .get();
   }
 
   sendMessage(String chatRoomId, MessageModel message) async {
     Map<String, dynamic> messageMap = {
       "message": message.message,
-      "send_by": message.sendBy
+      "send_by": message.sendBy,
+      "date_time": message.dateTime
     };
 
     await FirebaseFirestore.instance
@@ -58,7 +73,7 @@ class DatabaseService {
         .add(messageMap);
   }
 
-  getMessages(String chatRoomId) async {
+  Future<QuerySnapshot> getMessages(String chatRoomId) async {
     return await FirebaseFirestore.instance
         .collection('chat_rooms')
         .doc(chatRoomId)
@@ -66,19 +81,23 @@ class DatabaseService {
         .get();
   }
 
-  Future<bool> isChatRoomExist(String firstUser, String secondUser) async {
-    QuerySnapshot querySnapshot = await getChatRooms();
-
+  Future<DocumentSnapshot> tryGetExistChatRoom(
+      String firstUser, String secondUser) async {
     String chatRoomId =
         '${firstUser}_$secondUser'.replaceAll("@mer.ci.nsu.ru", "");
     String reverseChatRoomId =
         '${secondUser}_$firstUser'.replaceAll("@mer.ci.nsu.ru", "");
-    for (int i = 0; i < querySnapshot.docs.length; i++) {
-      String idFromQuery = querySnapshot.docs[i].data()['chatroom_id'];
-      if (idFromQuery == chatRoomId || idFromQuery == reverseChatRoomId) {
-        return true;
-      }
+
+    DocumentSnapshot chatRoomQuery = await getChatRoomById(chatRoomId);
+    DocumentSnapshot reverseChatRoomQuery =
+        await getChatRoomById(reverseChatRoomId);
+
+    if (chatRoomQuery.exists) {
+      return chatRoomQuery;
+    } else if (reverseChatRoomQuery.exists) {
+      return reverseChatRoomQuery;
     }
-    return false;
+
+    return null;
   }
 }

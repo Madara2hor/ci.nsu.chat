@@ -3,7 +3,14 @@ import 'package:ci.nsu.chat/core/viewmodels/base_model.dart';
 import 'package:ci.nsu.chat/ui/shared/route_name.dart';
 
 class SideBarLayoutModel extends BaseModel {
-  String _currentPage = RouteName.chatListRoute;
+  String _initialPage = RouteName.chatListRoute;
+  String _currentPage;
+
+  SideBarLayoutModel() {
+    _currentPage == null
+        ? _currentPage = _initialPage
+        : _currentPage = _currentPage;
+  }
 
   String get currentPage => _currentPage;
 

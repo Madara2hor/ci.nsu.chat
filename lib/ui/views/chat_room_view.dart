@@ -1,6 +1,9 @@
 import 'package:ci.nsu.chat/core/models/chat_list_item_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/chat_room_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
+import 'package:ci.nsu.chat/ui/shared/route_name.dart';
+import 'package:ci.nsu.chat/ui/widgets/message_bubble.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'base_view.dart';
@@ -14,11 +17,11 @@ class ChatRoomView extends StatefulWidget {
 
 class _ChatRoomViewState extends State<ChatRoomView> {
   final TextEditingController _messageController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return BaseView<ChatRoomModel>(builder: (context, model, child) {
       model.chatItem = ModalRoute.of(context).settings.arguments;
-      print(model.chatItem.messages[0].message);
       return Scaffold(
           resizeToAvoidBottomPadding: true,
           floatingActionButton: _messageSenderWidget(() => {
@@ -63,13 +66,13 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                   ),
                 ],
               ),
-              _buildChatList(model),
+              _buildMessagesList(model),
             ],
           ));
     });
   }
 
-  Widget _buildChatList(ChatRoomModel model) {
+  Widget _buildMessagesList(ChatRoomModel model) {
     return Container(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 0, bottom: 0),
         height: MediaQuery.of(context).size.height - 142,
@@ -77,9 +80,14 @@ class _ChatRoomViewState extends State<ChatRoomView> {
             ? ListView.builder(
                 itemCount: model.chatItem.messages.length,
                 itemBuilder: (context, index) {
-                  return Text(model.chatItem.messages[index].message,
-                      style:
-                          TextStyle(color: AppColors.textColor, fontSize: 22));
+                  return MessageBubble(
+                    isCurrentUserMessage:
+                        model.chatItem.messages[index].sendBy ==
+                                model.chatItem.chattedUser.displayName
+                            ? false
+                            : true,
+                    message: model.chatItem.messages[index].message,
+                  );
                 })
             : Center(
                 child: Text(
