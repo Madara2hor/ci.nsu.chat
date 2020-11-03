@@ -38,7 +38,6 @@ class UsersModel extends BaseModel {
       }
     }
     refreshUsers();
-    sortUsers();
     setState(ViewState.Idle);
   }
 
@@ -46,10 +45,6 @@ class UsersModel extends BaseModel {
     setState(ViewState.Busy);
     _filtredUsers = _users;
     setState(ViewState.Idle);
-  }
-
-  sortUsers() {
-    _users.sort((a, b) => a.displayName.compareTo(b.displayName));
   }
 
   searchUser(String displayName) async {

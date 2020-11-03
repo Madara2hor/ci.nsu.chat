@@ -5,7 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class DatabaseService {
   Future<QuerySnapshot> getUsers() async {
-    return await FirebaseFirestore.instance.collection('users').get();
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .orderBy('displayName')
+        .get();
   }
 
   Future<QuerySnapshot> getUser(String displayName) async {
@@ -52,11 +55,33 @@ class DatabaseService {
     return await FirebaseFirestore.instance.collection('chat_rooms').get();
   }
 
+  Stream<QuerySnapshot> getChatRoomsStream() {
+    return FirebaseFirestore.instance.collection('chat_rooms').snapshots();
+  }
+
   Future<DocumentSnapshot> getChatRoomById(String chatRoomId) async {
     return await FirebaseFirestore.instance
         .collection('chat_rooms')
         .doc(chatRoomId)
         .get();
+  }
+
+  Future<QuerySnapshot> getMessages(String chatRoomId) async {
+    return await FirebaseFirestore.instance
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('chat')
+        .orderBy('date_time')
+        .get();
+  }
+
+  Stream<QuerySnapshot> getMessagesStream(String chatRoomId) {
+    return FirebaseFirestore.instance
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('chat')
+        .orderBy('date_time')
+        .snapshots();
   }
 
   sendMessage(String chatRoomId, MessageModel message) async {
@@ -71,14 +96,6 @@ class DatabaseService {
         .doc(chatRoomId)
         .collection('chat')
         .add(messageMap);
-  }
-
-  Future<QuerySnapshot> getMessages(String chatRoomId) async {
-    return await FirebaseFirestore.instance
-        .collection('chat_rooms')
-        .doc(chatRoomId)
-        .collection('chat')
-        .get();
   }
 
   Future<DocumentSnapshot> tryGetExistChatRoom(

@@ -14,8 +14,9 @@ class MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.all(10),
+        color: AppColors.secondColor,
         child: Row(
           children: <Widget>[
             Image(

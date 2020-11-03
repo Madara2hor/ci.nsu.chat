@@ -24,45 +24,57 @@ class _ChatListViewState extends State<ChatListView> {
               searchController: _searchController,
               onTap: () => model.refreshChatList(),
               onSubmitted: () => model.searchChatRoom(_searchController.text)),
-          body: model.state == ViewState.Busy
-              ? _circularProgressIndicator()
-              : _buildChatList(model)),
+          body: _buildChatList(model)),
     );
-  }
-
-  Widget _circularProgressIndicator() {
-    return Center(child: CircularProgressIndicator());
   }
 
   Widget _buildChatList(ChatListModel model) {
     return Container(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 0, bottom: 0),
-        child: model.chatList.length != 0
-            ? ListView.builder(
-                itemCount: model.chatList.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      ChatListTile(
-                          chatItem: model.chatList[index],
-                          onTap: () => Navigator.pushNamed(
-                              context, RouteName.chatRoomRoute,
-                              arguments: model.chatList[index])),
-                      Divider(
-                        height: 0,
-                        thickness: 0.5,
-                        color: Colors.white.withOpacity(0.5),
-                        indent: 3,
-                        endIndent: 3,
-                      ),
-                    ],
-                  );
-                })
-            : Center(
-                child: Text(
-                  'Чат не найден',
-                  style: TextStyle(color: AppColors.textColor, fontSize: 22),
-                ),
-              ));
+        child: StreamBuilder(
+          stream: model.chatRoomsStream(),
+          builder: (context, snapshot) {
+            model.parseChatRoomsSnapshot(snapshot.data);
+            if (snapshot.data != null) {
+              return model.chatList.length != 0
+                  ? ListView.builder(
+                      itemCount: model.chatList.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            ChatListTile(
+                                chatItem: model.chatList[index],
+                                onTap: () => Navigator.pushNamed(
+                                    context, RouteName.chatRoomRoute,
+                                    arguments: model.chatList[index])),
+                            Divider(
+                              height: 0,
+                              thickness: 0.5,
+                              color: Colors.white.withOpacity(0.5),
+                              indent: 3,
+                              endIndent: 3,
+                            ),
+                          ],
+                        );
+                      })
+                  : _noDataMessageWidget(model.state, 'Пользователь не найден');
+            } else {
+              return _noDataMessageWidget(
+                  model.state, 'Кажется, ты ещё ни с кем не общался...');
+            }
+          },
+        ));
+  }
+
+  Widget _noDataMessageWidget(ViewState state, String message) {
+    return state == ViewState.Busy
+        ? Center(child: CircularProgressIndicator())
+        : Center(
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textColor, fontSize: 22),
+            ),
+          );
   }
 }

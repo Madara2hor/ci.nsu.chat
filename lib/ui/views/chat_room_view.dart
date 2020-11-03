@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:ci.nsu.chat/core/models/chat_list_item_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/chat_room_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
-import 'package:ci.nsu.chat/ui/shared/route_name.dart';
 import 'package:ci.nsu.chat/ui/widgets/message_bubble.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'base_view.dart';
 
@@ -17,58 +18,68 @@ class ChatRoomView extends StatefulWidget {
 
 class _ChatRoomViewState extends State<ChatRoomView> {
   final TextEditingController _messageController = TextEditingController();
+  final ScrollController _myController = ScrollController();
+  final FocusNode _messageFocus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     return BaseView<ChatRoomModel>(builder: (context, model, child) {
       model.chatItem = ModalRoute.of(context).settings.arguments;
       return Scaffold(
-          resizeToAvoidBottomPadding: true,
-          floatingActionButton: _messageSenderWidget(() => {
-                if (_messageController.text != "")
-                  {
-                    model.sendMessage(_messageController.text),
-                    _messageController.text = ""
-                  }
-              }),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      alignment: Alignment.bottomLeft,
-                      margin:
-                          EdgeInsets.only(left: 12.0, top: 40.0, right: 12.0),
-                      child: Image(
-                          color: AppColors.textColor,
-                          height: 24,
-                          width: 24,
-                          image: AssetImage('assets/icons/back.png')),
+          body: GestureDetector(
+        onTap: () => _messageFocus.unfocus(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    alignment: Alignment.bottomLeft,
+                    margin: EdgeInsets.only(left: 12.0, top: 25.0, right: 12.0),
+                    child: Image(
+                        color: AppColors.textColor,
+                        height: 24,
+                        width: 24,
+                        image: AssetImage('assets/icons/back.png')),
+                  ),
+                ),
+                Flexible(
+                  flex: 3,
+                  fit: FlexFit.tight,
+                  child: Container(
+                    height: 30,
+                    margin: EdgeInsets.only(top: 35.0, right: 12.0),
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      model.chatItem.chattedUser.displayName,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          TextStyle(color: AppColors.textColor, fontSize: 17),
                     ),
                   ),
-                  Flexible(
-                    flex: 3,
-                    fit: FlexFit.tight,
-                    child: Container(
-                      height: 30,
-                      margin: EdgeInsets.only(top: 40.0, right: 12.0),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        model.chatItem.chattedUser.displayName,
-                        overflow: TextOverflow.ellipsis,
-                        style:
-                            TextStyle(color: AppColors.textColor, fontSize: 17),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              _buildMessagesList(model),
-            ],
-          ));
+                ),
+              ],
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.loose,
+              child: _buildMessagesList(model),
+            ),
+            Container(
+              margin: const EdgeInsets.only(bottom: 10.0),
+              child: _messageSenderWidget(() => {
+                    if (_messageController.text != "")
+                      {
+                        model.sendMessage(_messageController.text),
+                        _messageController.text = "",
+                      }
+                  }),
+            ),
+          ],
+        ),
+      ));
     });
   }
 
@@ -76,30 +87,42 @@ class _ChatRoomViewState extends State<ChatRoomView> {
     return Container(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 0, bottom: 0),
         height: MediaQuery.of(context).size.height - 142,
-        child: model.chatItem.messages.length != 0
-            ? ListView.builder(
-                itemCount: model.chatItem.messages.length,
-                itemBuilder: (context, index) {
-                  return MessageBubble(
-                    isCurrentUserMessage:
-                        model.chatItem.messages[index].sendBy ==
-                                model.chatItem.chattedUser.displayName
-                            ? false
-                            : true,
-                    message: model.chatItem.messages[index].message,
-                  );
-                })
-            : Center(
+        child: StreamBuilder(
+          stream: model.messagesStream(),
+          builder: (context, snapshot) {
+            if (snapshot.data != null) {
+              model.parseMessagesSnapshot(snapshot.data);
+              Timer(
+                  Duration(milliseconds: 100),
+                  () => _myController
+                      .jumpTo(_myController.position.maxScrollExtent));
+              return ListView.builder(
+                  controller: _myController,
+                  itemCount: model.chatItem.messages.length,
+                  itemBuilder: (context, index) {
+                    return MessageBubble(
+                      isCurrentUserMessage:
+                          model.chatItem.messages[index].sendBy ==
+                                  model.chatItem.chattedUser.displayName
+                              ? false
+                              : true,
+                      message: model.chatItem.messages[index].message,
+                    );
+                  });
+            } else {
+              return Center(
                 child: Text(
-                  'Сообщений нет',
+                  'Сообщений нет...',
                   style: TextStyle(color: AppColors.textColor, fontSize: 22),
                 ),
-              ));
+              );
+            }
+          },
+        ));
   }
 
   Widget _messageSenderWidget(Function _onTap) {
     Function onTap = _onTap;
-    Function onSubmitted;
     return Container(
       width: MediaQuery.of(context).size.width - 30,
       height: 56,
@@ -114,6 +137,7 @@ class _ChatRoomViewState extends State<ChatRoomView> {
             child: Container(
                 padding: EdgeInsets.only(left: 16),
                 child: TextField(
+                  focusNode: _messageFocus,
                   controller: _messageController,
                   style: TextStyle(color: AppColors.textColor),
                   onSubmitted: null,

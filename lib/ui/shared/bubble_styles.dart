@@ -8,7 +8,7 @@ extension BubbleStyles on BubbleStyle {
     nip: BubbleNip.leftTop,
     color: AppColors.somebodyMessageColor,
     elevation: 5,
-    margin: BubbleEdges.only(top: 8.0, right: 50.0),
+    margin: BubbleEdges.only(bottom: 8.0, right: 50.0),
     alignment: Alignment.topLeft,
   );
 
@@ -16,7 +16,7 @@ extension BubbleStyles on BubbleStyle {
     nip: BubbleNip.rightTop,
     color: AppColors.myMessageColor,
     elevation: 5,
-    margin: BubbleEdges.only(top: 8.0, left: 50.0),
+    margin: BubbleEdges.only(bottom: 8.0, left: 50.0),
     alignment: Alignment.topRight,
   );
 }

@@ -13,12 +13,13 @@ class MessageBubble extends StatelessWidget {
     return isCurrentUserMessage
         ? Bubble(
             style: BubbleStyles.styleMe,
-            child: Text(message, style: TextStyle(color: AppColors.textColor)),
+            child: Text(message != null ? message : "null",
+                style: TextStyle(color: AppColors.textColor)),
           )
         : Bubble(
             style: BubbleStyles.styleSomebody,
             child: Text(
-              message,
+              message != null ? message : "null",
               style: TextStyle(color: AppColors.textColor),
             ),
           );
