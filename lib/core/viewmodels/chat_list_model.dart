@@ -25,9 +25,7 @@ class ChatListModel extends BaseModel {
   }
 
   onStream() {
-    if (state == ViewState.Busy) {
-      setState(ViewState.Idle);
-    }
+    setState(ViewState.Stream);
   }
 
   Stream<QuerySnapshot> chatRoomsStream() {
@@ -43,35 +41,31 @@ class ChatListModel extends BaseModel {
       String user_2 = chatRoomsSnapshot.docs[i].data()['users'][1];
       String chatRoomId = chatRoomsSnapshot.docs[i].data()['chatroom_id'];
 
-      if (user_1 == currentUser || user_2 == currentUser) {
-        if (user_1 == currentUser) {
-          chattedUserSnapshot = await _databaseService.getUser(user_2);
-        } else {
-          chattedUserSnapshot = await _databaseService.getUser(user_1);
-        }
+      if (user_1 == currentUser) {
+        chattedUserSnapshot = await _databaseService.getUser(user_2);
+      } else {
+        chattedUserSnapshot = await _databaseService.getUser(user_1);
+      }
 
-        DBUser chattedUser = DBUser(
-            chattedUserSnapshot.docs[0].data()['displayName'],
-            chattedUserSnapshot.docs[0].data()['email'],
-            chattedUserSnapshot.docs[0].data()['photoURL']);
+      DBUser chattedUser = DBUser(
+          chattedUserSnapshot.docs[0].data()['displayName'],
+          chattedUserSnapshot.docs[0].data()['email'],
+          chattedUserSnapshot.docs[0].data()['photoURL']);
 
-        QuerySnapshot messagesSnapshot =
-            await _databaseService.getMessages(chatRoomId);
-        List<MessageModel> messages = [];
+      QuerySnapshot messagesSnapshot =
+          await _databaseService.getMessages(chatRoomId);
+      List<MessageModel> messages = [];
 
-        String message = messagesSnapshot.docs[messagesSnapshot.docs.length - 1]
-            .data()['message'];
-        String sendBy = messagesSnapshot.docs[messagesSnapshot.docs.length - 1]
-            .data()['send_by'];
-        String dateTime = messagesSnapshot
-            .docs[messagesSnapshot.docs.length - 1]
-            .data()['date_time'];
-        messages.add(MessageModel(message, sendBy, dateTime));
+      String message = messagesSnapshot.docs[messagesSnapshot.docs.length - 1]
+          .data()['message'];
+      String sendBy = messagesSnapshot.docs[messagesSnapshot.docs.length - 1]
+          .data()['send_by'];
+      String dateTime = messagesSnapshot.docs[messagesSnapshot.docs.length - 1]
+          .data()['date_time'];
+      messages.add(MessageModel(message, sendBy, dateTime));
 
-        if (messages.length > 0) {
-          _tempChatList
-              .add(ChatListItemModel(chatRoomId, chattedUser, messages));
-        }
+      if (messages.length > 0) {
+        _tempChatList.add(ChatListItemModel(chatRoomId, chattedUser, messages));
       }
     }
     if (_chatList != _tempChatList) {
@@ -81,6 +75,13 @@ class ChatListModel extends BaseModel {
     sortChatList();
     _filtredChatList = _chatList;
     onStream();
+  }
+
+  isRoomsExist() {
+    if (_chatList.length == 0) {
+      return false;
+    }
+    return true;
   }
 
   sortChatList() {
@@ -98,7 +99,7 @@ class ChatListModel extends BaseModel {
     setState(ViewState.Idle);
   }
 
-  searchChatRoom(String displayName) async {
+  searchChatRoom(String displayName) {
     setState(ViewState.Busy);
 
     String currentUser = _authenticationService.currentUser.displayName;

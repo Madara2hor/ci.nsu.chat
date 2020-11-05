@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:ci.nsu.chat/core/models/chat_list_item_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/chat_room_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:ci.nsu.chat/ui/widgets/message_bubble.dart';
@@ -31,36 +30,40 @@ class _ChatRoomViewState extends State<ChatRoomView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    alignment: Alignment.bottomLeft,
-                    margin: EdgeInsets.only(left: 12.0, top: 25.0, right: 12.0),
-                    child: Image(
-                        color: AppColors.textColor,
-                        height: 24,
-                        width: 24,
-                        image: AssetImage('assets/icons/back.png')),
-                  ),
-                ),
-                Flexible(
-                  flex: 3,
-                  fit: FlexFit.tight,
-                  child: Container(
-                    height: 30,
-                    margin: EdgeInsets.only(top: 35.0, right: 12.0),
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      model.chatItem.chattedUser.displayName,
-                      overflow: TextOverflow.ellipsis,
-                      style:
-                          TextStyle(color: AppColors.textColor, fontSize: 17),
+            Container(
+              color: AppColors.secondColor,
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      alignment: Alignment.bottomLeft,
+                      margin:
+                          EdgeInsets.only(left: 12.0, top: 25.0, right: 12.0),
+                      child: Image(
+                          color: AppColors.textColor,
+                          height: 24,
+                          width: 24,
+                          image: AssetImage('assets/icons/back.png')),
                     ),
                   ),
-                ),
-              ],
+                  Flexible(
+                    flex: 3,
+                    fit: FlexFit.tight,
+                    child: Container(
+                      height: 30,
+                      margin: EdgeInsets.only(top: 35.0, right: 12.0),
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        model.chatItem.chattedUser.displayName,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            TextStyle(color: AppColors.textColor, fontSize: 17),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             Flexible(
               flex: 2,
@@ -83,19 +86,21 @@ class _ChatRoomViewState extends State<ChatRoomView> {
     });
   }
 
+  scroll() {
+    Timer(Duration(milliseconds: 100),
+        () => _myController.jumpTo(_myController.position.maxScrollExtent));
+  }
+
   Widget _buildMessagesList(ChatRoomModel model) {
     return Container(
         padding: const EdgeInsets.only(left: 18, right: 18, top: 0, bottom: 0),
-        height: MediaQuery.of(context).size.height - 142,
+        height: MediaQuery.of(context).size.height,
         child: StreamBuilder(
           stream: model.messagesStream(),
           builder: (context, snapshot) {
             if (snapshot.data != null) {
               model.parseMessagesSnapshot(snapshot.data);
-              Timer(
-                  Duration(milliseconds: 100),
-                  () => _myController
-                      .jumpTo(_myController.position.maxScrollExtent));
+              scroll();
               return ListView.builder(
                   controller: _myController,
                   itemCount: model.chatItem.messages.length,

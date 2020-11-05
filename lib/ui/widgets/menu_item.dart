@@ -21,15 +21,15 @@ class MenuItem extends StatelessWidget {
           children: <Widget>[
             Image(
                 color: AppColors.thirdColor,
-                height: 24,
-                width: 24,
+                height: 22,
+                width: 22,
                 image: AssetImage('assets/icons/$imageName')),
             SizedBox(
               width: 10,
             ),
             Text(
               title,
-              style: TextStyle(fontSize: 14, color: AppColors.textColor),
+              style: TextStyle(fontSize: 16, color: AppColors.textColor),
             )
           ],
         ),

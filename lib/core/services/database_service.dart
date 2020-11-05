@@ -18,6 +18,13 @@ class DatabaseService {
         .get();
   }
 
+  Stream<QuerySnapshot> getUsersStream() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .orderBy('displayName')
+        .snapshots();
+  }
+
   uploadUserInfo(User user) async {
     Map<String, String> userInfo = {
       "displayName": user.displayName,
@@ -29,8 +36,9 @@ class DatabaseService {
 
   Future<DocumentSnapshot> createChatRoom(
       DBUser withUser, User currentUser) async {
-    Future<DocumentSnapshot> chatRoomDocument =
-        tryGetExistChatRoom(currentUser.email, withUser.email);
+    DocumentSnapshot chatRoomDocument =
+        await tryGetExistChatRoom(currentUser.email, withUser.email);
+
     if (chatRoomDocument == null) {
       String chatRoomId = '${currentUser.email}_${withUser.email}'
           .replaceAll("@mer.ci.nsu.ru", "");
@@ -59,8 +67,8 @@ class DatabaseService {
     return FirebaseFirestore.instance.collection('chat_rooms').snapshots();
   }
 
-  Future<DocumentSnapshot> getChatRoomById(String chatRoomId) async {
-    return await FirebaseFirestore.instance
+  Future<DocumentSnapshot> getChatRoomById(String chatRoomId) {
+    return FirebaseFirestore.instance
         .collection('chat_rooms')
         .doc(chatRoomId)
         .get();

@@ -1,11 +1,12 @@
-import 'package:ci.nsu.chat/core/enums/viewState.dart';
+import 'package:ci.nsu.chat/core/models/chat_list_item_model.dart';
 import 'package:ci.nsu.chat/core/viewmodels/users_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:ci.nsu.chat/ui/shared/dialog_helper.dart';
 import 'package:ci.nsu.chat/ui/shared/route_name.dart';
 import 'package:ci.nsu.chat/ui/widgets/animated_search_bar.dart';
 import 'package:ci.nsu.chat/ui/widgets/models/dialog_content.dart';
-import 'package:ci.nsu.chat/ui/widgets/user_search_tile.dart';
+import 'package:ci.nsu.chat/ui/widgets/no_data_message.dart';
+import 'package:ci.nsu.chat/ui/widgets/user_list_tile.dart';
 import 'package:flutter/material.dart';
 
 import 'base_view.dart';
@@ -27,66 +28,89 @@ class _UsersViewState extends State<UsersView> {
               searchController: _searchController,
               onTap: () => model.refreshUsers(),
               onSubmitted: () => model.searchUser(_searchController.text)),
-          body: model.state == ViewState.Busy
-              ? _circularProgressIndicator()
-              : _buildSearchList(model)),
+          body: Column(
+            children: [
+              Container(
+                color: AppColors.secondColor,
+                child: Row(
+                  children: [
+                    Flexible(
+                      flex: 3,
+                      fit: FlexFit.tight,
+                      child: Container(
+                        height: 30,
+                        margin: EdgeInsets.only(top: 35.0, right: 12.0),
+                        alignment: Alignment.topCenter,
+                        child: Text(
+                          'Пользователи',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: AppColors.textColor, fontSize: 17),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Flexible(
+                flex: 2,
+                fit: FlexFit.loose,
+                child: _buildUsersList(model),
+              ),
+            ],
+          )),
     );
   }
 
-  Widget _circularProgressIndicator() {
-    return Center(child: CircularProgressIndicator());
-  }
-
-  Widget _buildSearchList(UsersModel model) {
+  Widget _buildUsersList(UsersModel model) {
     return Container(
-        padding: const EdgeInsets.only(left: 18, right: 18, top: 0, bottom: 0),
-        child: model.users.length != 0
-            ? ListView.builder(
-                itemCount: model.users.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      UserSearchTile(
-                        user: model.users[index],
-                        onTap: () async {
-                          var chatItem =
-                              await model.goToChat(model.users[index]);
-                          if (chatItem == null) {
-                            _showWarningDialog();
-                          } else {
-                            Navigator.pushNamed(
-                                context, RouteName.chatRoomRoute,
-                                arguments: chatItem);
-                          }
-                        },
-                      ),
-                      Divider(
-                        height: 0,
-                        thickness: 0.5,
-                        color: Colors.white.withOpacity(0.5),
-                        indent: 3,
-                        endIndent: 3,
-                      ),
-                    ],
-                  );
-                })
-            : Center(
-                child: Text(
-                  'Пользователь не найден',
-                  style: TextStyle(
-                      color: Color(0xffd7d7d7),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28),
-                ),
-              ));
+        padding: const EdgeInsets.only(left: 8, right: 8),
+        child: StreamBuilder(
+          stream: model.usersStream(),
+          builder: (context, snapshot) {
+            model.parseUsersSnapshot(snapshot.data);
+            if (snapshot.data != null) {
+              return model.users.length != 0
+                  ? ListView.builder(
+                      itemCount: model.users.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: AppColors.mainColor,
+                          shadowColor: AppColors.textColor,
+                          child: UserListTile(
+                            user: model.users[index],
+                            onTap: () {
+                              model
+                                  .goToChat(model.users[index])
+                                  .then((chatItem) => {
+                                        if (chatItem == null)
+                                          {_showWarningDialog()}
+                                        else
+                                          {
+                                            Navigator.pushNamed(context,
+                                                RouteName.chatRoomRoute,
+                                                arguments: chatItem)
+                                          }
+                                      });
+                            },
+                          ),
+                        );
+                      })
+                  : NoDataMessageWidget(model.state, 'Пользователь не найден');
+            } else {
+              return NoDataMessageWidget(
+                  model.state, 'Этим приложением ещё никто не пользовался...');
+            }
+          },
+        ));
   }
 
   void _showWarningDialog() {
     DialogHelper.warning(
         context,
         DialogContent(
-          text: 'Тут ещё нельзя создавать чат с сами собой.',
-          title: 'Опаньки!',
+          text: 'Здесь ещё нельзя создавать чат с самим собой.',
+          title: 'Очень жаль...',
         ));
   }
 }

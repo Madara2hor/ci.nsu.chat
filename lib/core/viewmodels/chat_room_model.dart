@@ -23,16 +23,15 @@ class ChatRoomModel extends BaseModel {
   }
 
   parseMessagesSnapshot(QuerySnapshot messagesSnapshot) {
-    if (messagesSnapshot.docs == null) {
-      return;
-    }
-    if (messagesSnapshot.docs.length > _chatItem.messages.length) {
-      _chatItem.messages = [];
-      for (int i = 0; i < messagesSnapshot.docs.length; i++) {
-        String message = messagesSnapshot.docs[i].data()['message'];
-        String sendBy = messagesSnapshot.docs[i].data()['send_by'];
-        String dateTime = messagesSnapshot.docs[i].data()['date_time'];
-        _chatItem.messages.add(MessageModel(message, sendBy, dateTime));
+    if (messagesSnapshot.docs != null) {
+      if (messagesSnapshot.docs.length > _chatItem.messages.length) {
+        _chatItem.messages = [];
+        for (int i = 0; i < messagesSnapshot.docs.length; i++) {
+          String message = messagesSnapshot.docs[i].data()['message'];
+          String sendBy = messagesSnapshot.docs[i].data()['send_by'];
+          String dateTime = messagesSnapshot.docs[i].data()['date_time'];
+          _chatItem.messages.add(MessageModel(message, sendBy, dateTime));
+        }
       }
     }
   }

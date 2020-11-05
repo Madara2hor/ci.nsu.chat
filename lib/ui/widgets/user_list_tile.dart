@@ -3,15 +3,16 @@ import 'package:ci.nsu.chat/core/models/db_user_model.dart';
 import 'package:ci.nsu.chat/ui/shared/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class UserSearchTile extends StatelessWidget {
+class UserListTile extends StatelessWidget {
   final DBUser user;
   final Function onTap;
 
-  const UserSearchTile({@required this.user, @required this.onTap});
+  const UserListTile({@required this.user, @required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+        margin: const EdgeInsets.only(left: 8.0, right: 4.0),
         height: 85,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -70,7 +71,8 @@ class UserSearchTile extends StatelessWidget {
             GestureDetector(
               onTap: onTap,
               child: Container(
-                alignment: Alignment.centerRight,
+                color: AppColors.mainColor,
+                alignment: Alignment.center,
                 height: 50.0,
                 width: 50.0,
                 child: Image(

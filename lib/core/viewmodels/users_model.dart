@@ -1,7 +1,6 @@
 import 'package:ci.nsu.chat/core/enums/viewState.dart';
 import 'package:ci.nsu.chat/core/models/chat_list_item_model.dart';
 import 'package:ci.nsu.chat/core/models/db_user_model.dart';
-import 'package:ci.nsu.chat/core/models/message_model.dart';
 import 'package:ci.nsu.chat/core/services/authentication_service.dart';
 import 'package:ci.nsu.chat/core/services/database_service.dart';
 import 'package:ci.nsu.chat/core/viewmodels/base_model.dart';
@@ -21,24 +20,36 @@ class UsersModel extends BaseModel {
   List<DBUser> get users => _filtredUsers;
 
   UsersModel() {
-    getUsers();
+    if (_filtredUsers.length == 0) {
+      setState(ViewState.Busy);
+    }
   }
 
-  getUsers() async {
-    setState(ViewState.Busy);
-
-    QuerySnapshot querySnapshot = await _databaseService.getUsers();
-    if (querySnapshot.docs.length > _users.length) {
-      _users = [];
-      for (int i = 0; i < querySnapshot.docs.length; i++) {
-        _users.add(DBUser(
-            querySnapshot.docs[i].data()['displayName'],
-            querySnapshot.docs[i].data()['email'],
-            querySnapshot.docs[i].data()['photoURL']));
-      }
+  onStream() {
+    if (state == ViewState.Busy) {
+      setState(ViewState.Stream);
     }
-    refreshUsers();
-    setState(ViewState.Idle);
+  }
+
+  Stream<QuerySnapshot> usersStream() {
+    return _databaseService.getUsersStream();
+  }
+
+  parseUsersSnapshot(QuerySnapshot usersSnapshot) async {
+    List<DBUser> _tempUsersList = [];
+    for (int i = 0; i < usersSnapshot.docs.length; i++) {
+      _tempUsersList.add(DBUser(
+          usersSnapshot.docs[i].data()['displayName'],
+          usersSnapshot.docs[i].data()['email'],
+          usersSnapshot.docs[i].data()['photoURL']));
+    }
+
+    if (_users != _tempUsersList) {
+      _users = _tempUsersList;
+    }
+
+    _filtredUsers = _users;
+    onStream();
   }
 
   refreshUsers() {
@@ -47,8 +58,9 @@ class UsersModel extends BaseModel {
     setState(ViewState.Idle);
   }
 
-  searchUser(String displayName) async {
+  searchUser(String displayName) {
     setState(ViewState.Busy);
+
     _filtredUsers = [];
     for (int i = 0; i < _users.length; i++) {
       if (_users[i]
@@ -66,48 +78,31 @@ class UsersModel extends BaseModel {
     setState(ViewState.Idle);
   }
 
-  goToChat(DBUser withUser) async {
+  Future<ChatListItemModel> goToChat(DBUser withUser) async {
     User currentUser = _authenticationService.currentUser;
-    ChatListItemModel chatItem;
+    QuerySnapshot chattedUserSnapshot;
     if (currentUser.displayName == withUser.displayName) {
       return null;
     }
 
-    QuerySnapshot chattedUserSnapshot;
-    var chatRoomSnapshot =
+    DocumentSnapshot chatRoomSnapshot =
         await _databaseService.createChatRoom(withUser, currentUser);
 
     String user_1 = chatRoomSnapshot.data()['users'][0];
     String user_2 = chatRoomSnapshot.data()['users'][1];
     String chatRoomId = chatRoomSnapshot.data()['chatroom_id'];
 
-    if (user_1 == currentUser.displayName ||
-        user_2 == currentUser.displayName) {
-      if (user_1 == currentUser.displayName) {
-        chattedUserSnapshot = await _databaseService.getUser(user_2);
-      } else {
-        chattedUserSnapshot = await _databaseService.getUser(user_1);
-      }
-
-      DBUser chattedUser = DBUser(
-          chattedUserSnapshot.docs[0].data()['displayName'],
-          chattedUserSnapshot.docs[0].data()['email'],
-          chattedUserSnapshot.docs[0].data()['photoURL']);
-
-      QuerySnapshot messagesSnapshot =
-          await _databaseService.getMessages(chatRoomId);
-
-      List<MessageModel> messages = [];
-      for (int i = 0; i < messagesSnapshot.docs.length; i++) {
-        String message = messagesSnapshot.docs[i].data()['message'];
-        String sendBy = messagesSnapshot.docs[i].data()['send_by'];
-        String dateTime = messagesSnapshot.docs[i].data()['date_time'];
-        messages.add(MessageModel(message, sendBy, dateTime));
-      }
-
-      chatItem = ChatListItemModel(chatRoomId, chattedUser, messages);
+    if (user_1 == currentUser.displayName) {
+      chattedUserSnapshot = await _databaseService.getUser(user_2);
+    } else {
+      chattedUserSnapshot = await _databaseService.getUser(user_1);
     }
 
-    return chatItem;
+    DBUser chattedUser = DBUser(
+        chattedUserSnapshot.docs[0].data()['displayName'],
+        chattedUserSnapshot.docs[0].data()['email'],
+        chattedUserSnapshot.docs[0].data()['photoURL']);
+
+    return ChatListItemModel(chatRoomId, chattedUser, []);
   }
 }

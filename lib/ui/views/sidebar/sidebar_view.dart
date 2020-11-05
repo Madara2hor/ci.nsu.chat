@@ -53,7 +53,7 @@ class _SideBarViewState extends State<SideBarView>
     final List<MenuItem> menuItems = [
       MenuItem(
           imageName: 'chat.png',
-          title: "Чат",
+          title: "Сообщения",
           onTap: () {
             widget.layoutModel.goTo(RouteName.chatListRoute);
           }),
@@ -75,7 +75,7 @@ class _SideBarViewState extends State<SideBarView>
                   top: 0,
                   bottom: 0,
                   left: isSideBarOpenedAsync.data ? 0 : -screenWidth,
-                  right: isSideBarOpenedAsync.data ? 70 : screenWidth - 40,
+                  right: isSideBarOpenedAsync.data ? 70 : screenWidth - 35,
                   child: Row(
                     children: [
                       Expanded(
@@ -115,7 +115,7 @@ class _SideBarViewState extends State<SideBarView>
   //this widget create GestureDetector which open/close sidebar
   Widget _sidebarOCButtonBuilder() {
     return Align(
-      alignment: Alignment(0, -0.9),
+      alignment: Alignment(0, 0.95),
       child: GestureDetector(
         onTap: () {
           onIconPressed();
@@ -123,10 +123,11 @@ class _SideBarViewState extends State<SideBarView>
         child: ClipPath(
           clipper: CustomMenuClipper(),
           child: Container(
+            padding: const EdgeInsets.only(right: 2.0),
             width: 35,
             height: 110,
             color: Color(0xff312058),
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.center,
             child: AnimatedIcon(
               progress: _animationController.view,
               icon: AnimatedIcons.menu_close,

@@ -160,14 +160,8 @@ class _SignInViewState extends State<SignInView> {
               Container(
                 alignment: Alignment.center,
                 child: InkWell(
-                  onTap: () async {
-                    return await DialogHelper.resetPassword(
-                        context,
-                        DialogContent(
-                          text:
-                              'Для восстановления пароля тебе придется топать к администратору.',
-                          title: 'Ну что ж ты так?',
-                        ));
+                  onTap: () {
+                    _showResetPasswordDialog();
                   },
                   child: Text('Восстановить пароль',
                       style: TextStyle(
@@ -184,6 +178,16 @@ class _SignInViewState extends State<SignInView> {
         ),
       ],
     );
+  }
+
+  void _showResetPasswordDialog() {
+    DialogHelper.resetPassword(
+        context,
+        DialogContent(
+          text:
+              'Для восстановления пароля тебе придется топать к администратору.',
+          title: 'Ну что ж ты так?',
+        ));
   }
 
   void _showWrongEmailDialog() {

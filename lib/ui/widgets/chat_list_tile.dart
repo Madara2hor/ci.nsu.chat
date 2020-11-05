@@ -14,6 +14,7 @@ class ChatListTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+          margin: const EdgeInsets.only(left: 4.0, right: 4.0),
           height: 85,
           width: MediaQuery.of(context).size.width,
           color: AppColors.mainColor,
