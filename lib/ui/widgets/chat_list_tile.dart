@@ -62,8 +62,13 @@ class ChatListTile extends StatelessWidget {
                       margin: const EdgeInsets.only(top: 5),
                       child: Text(
                         chatItem.messages[0].message != null
-                            ? chatItem
-                                .messages[chatItem.messages.length - 1].message
+                            ? chatItem.chattedUser.displayName ==
+                                    chatItem
+                                        .messages[chatItem.messages.length - 1]
+                                        .sendBy
+                                ? chatItem
+                                    .messages[chatItem.messages.length - 1]
+                                : 'Вы: ${chatItem.messages[chatItem.messages.length - 1].message}'
                             : 'Чат пуст...',
                         overflow: TextOverflow.ellipsis,
                         style:
