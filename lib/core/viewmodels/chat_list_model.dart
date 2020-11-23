@@ -6,6 +6,7 @@ import 'package:ci.nsu.chat/core/services/authentication_service.dart';
 import 'package:ci.nsu.chat/core/services/database_service.dart';
 import 'package:ci.nsu.chat/core/viewmodels/base_model.dart';
 import 'package:ci.nsu.chat/locator.dart';
+import 'package:ci.nsu.chat/ui/shared/string_coder.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatListModel extends BaseModel {
@@ -56,16 +57,21 @@ class ChatListModel extends BaseModel {
           await _databaseService.getMessages(chatRoomId);
       List<MessageModel> messages = [];
 
-      String message = messagesSnapshot.docs[messagesSnapshot.docs.length - 1]
-          .data()['message'];
-      String sendBy = messagesSnapshot.docs[messagesSnapshot.docs.length - 1]
-          .data()['send_by'];
-      String dateTime = messagesSnapshot.docs[messagesSnapshot.docs.length - 1]
-          .data()['date_time'];
-      messages.add(MessageModel(message, sendBy, dateTime));
+      if (messagesSnapshot.docs.length > 0) {
+        String message = StringCoder.decodeMessage(messagesSnapshot
+            .docs[messagesSnapshot.docs.length - 1]
+            .data()['message']);
+        String sendBy = messagesSnapshot.docs[messagesSnapshot.docs.length - 1]
+            .data()['send_by'];
+        String dateTime = messagesSnapshot
+            .docs[messagesSnapshot.docs.length - 1]
+            .data()['date_time'];
+        messages.add(MessageModel(message, sendBy, dateTime));
 
-      if (messages.length > 0) {
-        _tempChatList.add(ChatListItemModel(chatRoomId, chattedUser, messages));
+        if (messages.length > 0) {
+          _tempChatList
+              .add(ChatListItemModel(chatRoomId, chattedUser, messages));
+        }
       }
     }
     if (_chatList != _tempChatList) {
